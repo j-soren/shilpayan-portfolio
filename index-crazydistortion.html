@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected Works — Architecture</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --text-main: #f0f0f0;
+            --text-muted: #555555;
+            --accent: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: none;
+        }
+
+        body {
+            font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* WebGL Canvas sits behind UI, but rendering the images */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.active {
+            width: 90px;
+            height: 90px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            mix-blend-mode: normal;
+        }
+
+        .cursor-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cursor.active .cursor-text {
+            opacity: 1;
+        }
+
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-color);
+            z-index: 9000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5vw;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 4vw;
+            position: relative;
+            z-index: 20;
+        }
+
+        .hero h1 {
+            font-size: 11vw;
+            font-weight: 500;
+            letter-spacing: -0.05em;
+            line-height: 0.85;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .hero p {
+            margin-top: 3rem;
+            font-size: 1.2vw;
+            color: var(--text-muted);
+            max-width: 400px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        main {
+            padding-bottom: 20vh;
+            position: relative;
+            z-index: 20;
+        }
+
+        .project-section {
+            padding: 15vh 4vw;
+            display: flex;
+            flex-direction: column;
+            gap: 10vh;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 2rem;
+        }
+
+        .project-title {
+            font-size: 5vw;
+            font-weight: 500;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .project-category {
+            font-size: 0.9vw;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2vw;
+            align-items: center;
+        }
+
+        .img-large {
+            grid-column: 2 / 10;
+            height: 80vh;
+        }
+
+        .img-small {
+            grid-column: 8 / 13;
+            height: 50vh;
+            margin-top: -20vh;
+        }
+
+        .img-full {
+            grid-column: 1 / -1;
+            height: 90vh;
+        }
+
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* The original DOM images are hidden, WebGL will draw them */
+        .image-wrapper img {
+            width: 100%;
+            height: 130%;
+            object-fit: cover;
+            opacity: 0;
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            font-size: 0.9vw;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #fff;
+            mix-blend-mode: difference;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+        }
+
+        .modal img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .char {
+            transform: translateY(110%);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <div class="cursor" id="custom-cursor">
+        <span class="cursor-text">View</span>
+    </div>
+
+    <div class="loader-overlay" id="loader">Compiling Assets...</div>
+
+    <section class="hero">
+        <h1 id="hero-title">Selected<br>Works</h1>
+        <p id="hero-sub">Catalogue Vol. 1</p>
+    </section>
+
+    <main id="portfolio-container"></main>
+
+    <div class="modal" id="imageModal" onclick="closeModal(event)">
+        <img id="modalImage" src="" alt="Fullscreen Project View">
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ==========================================
+        // 1. CORE PHYSICS & SCROLL
+        // ==========================================
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            smooth: true,
+        });
+
+        let scrollVelocity = 0;
+        lenis.on('scroll', (e) => {
+            ScrollTrigger.update();
+            scrollVelocity = e.velocity;
+        });
+
+        gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+        gsap.ticker.lagSmoothing(0, 0);
+
+        // ==========================================
+        // 2. CUSTOM CURSOR
+        // ==========================================
+        const cursor = document.getElementById('custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+        });
+
+        gsap.ticker.add(() => {
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            gsap.set(cursor, { x: cursorX, y: cursorY });
+        });
+
+        // ==========================================
+        // 3. FETCH DATA & BUILD DOM
+        // ==========================================
+        const container = document.getElementById('portfolio-container');
+
+        fetch('projects.json')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach((project) => {
+                    const section = document.createElement('div');
+                    section.className = 'project-section';
+
+                    const headerHTML = `
+                        <div class="project-header">
+                            <h2 class="project-title reveal-text">${project.title}</h2>
+                            <span class="project-category">[ ${project.category} ]</span>
+                        </div>
+                        <div class="editorial-grid">
+                    `;
+
+                    let imagesHTML = '';
+                    const layouts = ['img-large', 'img-small', 'img-full'];
+
+                    project.images.forEach((image, i) => {
+                        const layoutClass = layouts[i % layouts.length];
+                        imagesHTML += `
+                            <div class="image-wrapper ${layoutClass} hover-target" onclick="openModal('${image.src}')">
+                                <img src="${image.src}" alt="${image.caption}" class="parallax-img" crossorigin="anonymous">
+                                <div class="image-caption">${image.caption}</div>
+                            </div>
+                        `;
+                    });
+
+                    section.innerHTML = headerHTML + imagesHTML + '</div>';
+                    container.appendChild(section);
+                });
+
+                // Wait for all newly created images to load before starting WebGL
+                const images = document.querySelectorAll('.parallax-img');
+                const promises = Array.from(images).map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(resolve => img.addEventListener('load', resolve));
+                });
+
+                Promise.all(promises).then(() => {
+                    initWebGL(images);
+                    initAnimations();
+                });
+            });
+
+        // ==========================================
+        // 4. WEBGL SHADER PIPELINE (The Magic)
+        // ==========================================
+        const uniforms = {
+            uScrollVelocity: { value: 0 }
+        };
+
+        const planes = [];
+        let scene, camera, renderer;
+
+        function initWebGL(domImages) {
+            const canvas = document.getElementById('webgl-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            scene = new THREE.Scene();
+            camera = new THREE.OrthographicCamera(
+                window.innerWidth / -2, window.innerWidth / 2,
+                window.innerHeight / 2, window.innerHeight / -2,
+                1, 1000
+            );
+            camera.position.z = 1;
+
+            // Vertex Shader: Controls Geometry Bending
+            const vertexShader = `
+                uniform float uScrollVelocity;
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    vec3 pos = position;
+                    // Bends the geometry based on scroll speed
+                    pos.y += sin(uv.x * 3.14159) * uScrollVelocity * 0.15;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                }
+            `;
+
+            // Fragment Shader: Controls RGB Split (Chromatic Aberration)
+            const fragmentShader = `
+                uniform sampler2D uTexture;
+                uniform float uScrollVelocity;
+                varying vec2 vUv;
+                void main() {
+                    vec2 uv = vUv;
+                    // Liquid RGB shift based on scroll speed
+                    float shift = uScrollVelocity * 0.002;
+                    float r = texture2D(uTexture, uv + vec2(0.0, shift)).r;
+                    float g = texture2D(uTexture, uv).g;
+                    float b = texture2D(uTexture, uv - vec2(0.0, shift)).b;
+                    gl_FragColor = vec4(r, g, b, 1.0);
+                }
+            `;
+
+            const textureLoader = new THREE.TextureLoader();
+
+            // Create a 3D Mesh for every DOM image
+            domImages.forEach(img => {
+                const geometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+                const material = new THREE.ShaderMaterial({
+                    vertexShader,
+                    fragmentShader,
+                    uniforms: {
+                        uTexture: { value: textureLoader.load(img.src) },
+                        uScrollVelocity: uniforms.uScrollVelocity
+                    },
+                    transparent: true
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+                planes.push({ mesh, img });
+            });
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.left = window.innerWidth / -2;
+                camera.right = window.innerWidth / 2;
+                camera.top = window.innerHeight / 2;
+                camera.bottom = window.innerHeight / -2;
+                camera.updateProjectionMatrix();
+            });
+
+            // Add WebGL Render to GSAP Ticker
+            gsap.ticker.add(renderWebGL);
+        }
+
+        function renderWebGL() {
+            // Smoothly interpolate velocity to avoid harsh snapping
+            uniforms.uScrollVelocity.value = gsap.utils.interpolate(uniforms.uScrollVelocity.value, scrollVelocity, 0.1);
+
+            // Sync WebGL Meshes directly to DOM Image positions
+            planes.forEach(plane => {
+                const rect = plane.img.getBoundingClientRect();
+                // Only render if on screen to save performance
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    plane.mesh.visible = true;
+                    plane.mesh.scale.set(rect.width, rect.height, 1);
+                    plane.mesh.position.x = rect.left - window.innerWidth / 2 + rect.width / 2;
+                    plane.mesh.position.y = -rect.top + window.innerHeight / 2 - rect.height / 2;
+                } else {
+                    plane.mesh.visible = false;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // ==========================================
+        // 5. DOM ANIMATIONS
+        // ==========================================
+        function initAnimations() {
+            gsap.to("#loader", { yPercent: -100, duration: 1.2, ease: "expo.inOut", delay: 0.5 });
+
+            const heroTitle = new SplitType('#hero-title', { types: 'chars' });
+            gsap.to(heroTitle.chars, { y: 0, stagger: 0.05, duration: 1, ease: "expo.out", delay: 1.2 });
+            gsap.from("#hero-sub", { opacity: 0, y: 20, duration: 1, delay: 1.8 });
+
+            // Animate the hidden DOM images, which drives the WebGL positions
+            const parallaxImages = document.querySelectorAll('.parallax-img');
+            parallaxImages.forEach(img => {
+                gsap.fromTo(img,
+                    { y: "-15%" },
+                    { y: "15%", ease: "none", scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true } }
+                );
+            });
+
+            const projectTitles = document.querySelectorAll('.reveal-text');
+            projectTitles.forEach(title => {
+                const split = new SplitType(title, { types: 'chars' });
+                gsap.from(split.chars, { y: 100, opacity: 0, stagger: 0.02, duration: 1, ease: "expo.out", scrollTrigger: { trigger: title, start: "top 90%" } });
+            });
+
+            const hoverTargets = document.querySelectorAll('.hover-target');
+            hoverTargets.forEach(target => {
+                target.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                target.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            });
+        }
+
+        // ==========================================
+        // 6. MODAL
+        // ==========================================
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+
+        function openModal(src) {
+            modalImg.src = src;
+            modal.style.display = 'flex';
+            gsap.to(modal, { opacity: 1, duration: 0.4 });
+            cursor.classList.remove('active');
+            lenis.stop();
+        }
+
+        function closeModal(e) {
+            if (e.target === modal) {
+                gsap.to(modal, { opacity: 0, duration: 0.4, onComplete: () => { modal.style.display = 'none'; modalImg.src = ''; lenis.start(); } });
+            }
+        }
+    </script>
+</body>
+
+</html>

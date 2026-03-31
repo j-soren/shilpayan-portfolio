@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structured Portfolio</title>
+    <style>
+        /* ==========================================
+           APP-DRIVEN DASHBOARD AESTHETIC
+           ========================================== */
+        :root {
+            --bg-page: #f9f9fa;
+            --bg-panel: #ffffff;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --border-light: #eaeaea;
+            --accent: #000000;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            padding: 3rem 4vw;
+        }
+
+        /* Top Navigation & Filters */
+        header {
+            max-width: 1400px;
+            margin: 0 auto 3rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            padding: 0.6rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #ccc;
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* Strict Grid Layout */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Uniform Cards */
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            /* Forces all thumbnails to be the exact same shape */
+            overflow: hidden;
+            background: #eee;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-image img {
+            transform: scale(1.03);
+        }
+
+        .card-meta {
+            padding: 1.5rem;
+        }
+
+        .card-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ==========================================
+           SLIDE-OUT DETAIL PANEL
+           ========================================== */
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .detail-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 600px;
+            /* Panel width */
+            height: 100vh;
+            background: var(--bg-panel);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-panel.active {
+            transform: translateX(0);
+        }
+
+        .panel-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .close-btn {
+            background: #f0f0f0;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .panel-content {
+            padding: 2rem;
+        }
+
+        .dtl-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .dtl-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .dtl-metadata {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: var(--bg-page);
+            border-radius: var(--radius-md);
+        }
+
+        .meta-item span {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        .meta-item strong {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .dtl-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 3rem;
+        }
+
+        .dtl-images {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dtl-images img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .dtl-images p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>Project Directory</h1>
+        </div>
+        <div class="filters" id="filter-container"></div>
+    </header>
+
+    <main>
+        <div class="project-grid" id="grid-container">
+        </div>
+    </main>
+
+    <div class="detail-overlay" id="overlay" onclick="closePanel()"></div>
+    <aside class="detail-panel" id="side-panel">
+        <div class="panel-header">
+            <span style="font-weight: 600;">Project Details</span>
+            <button class="close-btn" onclick="closePanel()">✕</button>
+        </div>
+        <div class="panel-content" id="panel-content">
+        </div>
+    </aside>
+
+    <script>
+        let allProjects = [];
+
+        // 1. Fetch Data
+        fetch('projects.json')
+            .then(res => res.json())
+            .then(data => {
+                allProjects = data;
+                setupFilters();
+                renderGrid('All');
+            });
+
+        // 2. Setup Category Filters dynamically based on JSON data
+        function setupFilters() {
+            const filterContainer = document.getElementById('filter-container');
+
+            // Extract unique categories from data
+            const categories = ['All', ...new Set(allProjects.map(p => p.category))];
+
+            categories.forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn ${category === 'All' ? 'active' : ''}`;
+                btn.innerText = category;
+
+                btn.onclick = (e) => {
+                    // Update active state
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    // Re-render grid
+                    renderGrid(category);
+                };
+
+                filterContainer.appendChild(btn);
+            });
+        }
+
+        // 3. Render the strict grid
+        function renderGrid(filterCategory) {
+            const grid = document.getElementById('grid-container');
+            grid.innerHTML = '';
+
+            const filtered = filterCategory === 'All'
+                ? allProjects
+                : allProjects.filter(p => p.category === filterCategory);
+
+            filtered.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                // Pass the whole project object to the panel function
+                card.onclick = () => openPanel(project);
+
+                // We use the first image in the array as the thumbnail
+                const thumbnail = project.images[0].src;
+
+                card.innerHTML = `
+                    <div class="card-image">
+                        <img src="${thumbnail}" alt="${project.title}" loading="lazy">
+                    </div>
+                    <div class="card-meta">
+                        <span class="card-category">${project.category}</span>
+                        <h2 class="card-title">${project.title}</h2>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 4. Handle Slide-Out Panel interactions
+        const panel = document.getElementById('side-panel');
+        const overlay = document.getElementById('overlay');
+        const contentDiv = document.getElementById('panel-content');
+
+        function openPanel(project) {
+            // Build the detailed image gallery
+            let imagesHTML = '';
+            project.images.forEach(img => {
+                imagesHTML += `
+                    <div>
+                        <img src="${img.src}" alt="${img.caption}">
+                        <p>${img.caption}</p>
+                    </div>
+                `;
+            });
+
+            // Populate the panel HTML
+            contentDiv.innerHTML = `
+                <span class="dtl-category">${project.category}</span>
+                <h2 class="dtl-title">${project.title}</h2>
+                
+                <div class="dtl-metadata">
+                    <div class="meta-item">
+                        <span>Client</span>
+                        <strong>${project.client || 'N/A'}</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Year</span>
+                        <strong>${project.year || 'N/A'}</strong>
+                    </div>
+                </div>
+
+                <div class="dtl-description">
+                    ${project.description}
+                </div>
+
+                <div class="dtl-images">
+                    ${imagesHTML}
+                </div>
+            `;
+
+            // Trigger animations
+            overlay.classList.add('active');
+            panel.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Lock background scrolling
+        }
+
+        function closePanel() {
+            overlay.classList.remove('active');
+            panel.classList.remove('active');
+            document.body.style.overflow = ''; // Unlock background scrolling
+        }
+
+        // Allow closing panel with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && panel.classList.contains('active')) {
+                closePanel();
+            }
+        });
+    </script>
+</body>
+
+</html>
