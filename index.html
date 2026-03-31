@@ -84,12 +84,11 @@
             <h2>Contact Shilpayan.</h2>
             <p>Ready to build with vision? Leave us a message and our team will get back to you shortly.</p>
     
-            <form class="contact-form"
-                onsubmit="event.preventDefault(); alert('Message sent successfully!'); closeContact({target: document.getElementById('contactOverlay')});">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Email Address" required>
-                <textarea rows="4" placeholder="Tell us about your project..." required></textarea>
-                <button type="submit">Send Message</button>
+            <form class="contact-form" id="whatsapp-form">
+                <input type="text" id="wa-name" placeholder="Your Name" required>
+                <input type="email" id="wa-email" placeholder="Email Address" required>
+                <textarea id="wa-message" rows="4" placeholder="Tell us about your project..." required></textarea>
+                <button type="submit">Send via WhatsApp</button>
             </form>
         </div>
     </div>
@@ -113,28 +112,56 @@
         }
 
         // ==========================================
-            // CONTACT MODAL LOGIC
+            // CONTACT MODAL & WHATSAPP LOGIC
             // ==========================================
             const contactOverlay = document.getElementById('contactOverlay');
 
             function openContact() {
                 contactOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Stop background scrolling
+                document.body.style.overflow = 'hidden';
             }
 
             function closeContact(event) {
-                // Close if clicking the "X" or the dark background overlay
                 if (event.target === contactOverlay || event.target.className === 'close-contact') {
                     contactOverlay.classList.remove('active');
-                    document.body.style.overflow = ''; // Restore background scrolling
+                    document.body.style.overflow = '';
                 }
             }
 
-            // Allow closing with the Escape key
             document.addEventListener('keydown', (e) => {
                 if (e.key === "Escape" && contactOverlay.classList.contains('active')) {
                     closeContact({ target: contactOverlay });
                 }
+            });
+
+            // WhatsApp Form Submission
+            document.getElementById('whatsapp-form').addEventListener('submit', function (e) {
+                e.preventDefault(); // Stop the page from reloading
+
+                // 1. SET YOUR WHATSAPP NUMBER HERE
+                // Include country code (e.g., 91). No plus sign, no spaces.
+                const phoneNumber = "918210166679";
+
+                // 2. Get the values the user typed
+                const name = document.getElementById('wa-name').value;
+                const email = document.getElementById('wa-email').value;
+                const message = document.getElementById('wa-message').value;
+
+                // 3. Format the text for WhatsApp
+                // %0A is the code for a line break (Enter key)
+                const whatsappText = `Hello Shilpayan Team,%0A%0AMy name is ${name}.%0AEmail: ${email}%0A%0A${message}`;
+
+                // 4. Create the final URL
+                const whatsappURL = `https://wa.me/${phoneNumber}?text=${whatsappText}`;
+
+                // 5. Open WhatsApp in a new tab
+                window.open(whatsappURL, '_blank');
+
+                // 6. Close the contact modal
+                closeContact({ target: contactOverlay });
+
+                // Optional: Clear the form so it's empty next time they open it
+                document.getElementById('whatsapp-form').reset();
             });
     </script>
 </body>
