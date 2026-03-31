@@ -5,7 +5,7 @@ export default defineConfig({
   // THIS MUST MATCH YOUR GITHUB REPOSITORY NAME EXACTLY!
   // Example: If your repo is github.com/username/shilpayan-portfolio
   // Then the base should be '/shilpayan-portfolio/'
-  base: '/shilpayan-portfolio/', 
+  base: '/', 
   
   build: {
     rollupOptions: {
