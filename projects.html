@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shilpayan | Projects</title>
+  <link rel="stylesheet" crossorigin href="/shilpayan-portfolio/assets/style-CAhS2Zyp.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logo">SHILPAYAN.</div>
+        <div class="nav-center">
+            <a href="index.html">Home</a>
+            <a href="projects.html" class="active">Projects</a>
+            <a href="about.html">About</a>
+        </div>
+        <div class="theme-controls">
+            <button class="theme-btn" onclick="setTheme('light', this)">Light</button>
+            <button class="theme-btn" onclick="setTheme('dark', this)">Dark</button>
+            <button class="theme-btn" onclick="setTheme('opal', this)">Opal</button>
+        </div>
+    </nav>
+
+    <header class="projects-header">
+        <div class="header-top">
+            <div class="header-title">
+                <h1>Project Directory</h1>
+            </div>
+        </div>
+        <div class="filters" id="filter-container"></div>
+    </header>
+
+    <main>
+        <div class="project-grid" id="grid-container"></div>
+    </main>
+
+    <div class="detail-overlay" id="overlay" onclick="closePanel()"></div>
+    <aside class="detail-panel" id="side-panel">
+        <div class="panel-header">
+            <span style="font-weight: 600; color: var(--text-main);">Project Details</span>
+            <button class="close-btn" onclick="closePanel()">✕</button>
+        </div>
+        <div class="panel-content" id="panel-content"></div>
+    </aside>
+
+    <script>
+        // ==========================================
+        // THEME LOGIC
+        // ==========================================
+        const savedTheme = localStorage.getItem('studio-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === savedTheme) btn.classList.add('active');
+            });
+        });
+
+        function setTheme(themeName, btnElement) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('studio-theme', themeName);
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+
+        // ==========================================
+        // DATA & RENDERING LOGIC
+        // ==========================================
+        let allProjects = [];
+
+        fetch('projects.json')
+            .then(res => res.json())
+            .then(data => {
+                allProjects = data;
+                setupFilters();
+                renderGrid('All');
+            })
+            .catch(err => console.error("Error loading projects:", err));
+
+        function setupFilters() {
+            const filterContainer = document.getElementById('filter-container');
+            const categories = ['All', ...new Set(allProjects.map(p => p.category))];
+
+            categories.forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn ${category === 'All' ? 'active' : ''}`;
+                btn.innerText = category;
+
+                btn.onclick = (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderGrid(category);
+                };
+
+                filterContainer.appendChild(btn);
+            });
+        }
+
+        function renderGrid(filterCategory) {
+            const grid = document.getElementById('grid-container');
+            grid.innerHTML = '';
+
+            const filtered = filterCategory === 'All'
+                ? allProjects
+                : allProjects.filter(p => p.category === filterCategory);
+
+            filtered.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openPanel(project);
+
+                const thumbnail = project.images[0].src;
+
+                card.innerHTML = `
+                    <div class="card-image">
+                        <img src="${thumbnail}" alt="${project.title}" loading="lazy">
+                    </div>
+                    <div class="card-meta">
+                        <span class="card-category">${project.category}</span>
+                        <h2 class="card-title">${project.title}</h2>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // PANEL LOGIC
+        // ==========================================
+        const panel = document.getElementById('side-panel');
+        const overlay = document.getElementById('overlay');
+        const contentDiv = document.getElementById('panel-content');
+
+        function openPanel(project) {
+            let imagesHTML = '';
+            project.images.forEach(img => {
+                imagesHTML += `
+                    <div>
+                        <img src="${img.src}" alt="${img.caption}">
+                        <p>${img.caption}</p>
+                    </div>
+                `;
+            });
+
+            contentDiv.innerHTML = `
+                <span class="dtl-category">${project.category}</span>
+                <h2 class="dtl-title">${project.title}</h2>
+                
+                <div class="dtl-metadata">
+                    <div class="meta-item">
+                        <span>Client</span>
+                        <strong>${project.client || 'N/A'}</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Year</span>
+                        <strong>${project.year || 'N/A'}</strong>
+                    </div>
+                </div>
+
+                <div class="dtl-description">
+                    ${project.description}
+                </div>
+
+                <div class="dtl-images">
+                    ${imagesHTML}
+                </div>
+            `;
+
+            overlay.classList.add('active');
+            panel.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePanel() {
+            overlay.classList.remove('active');
+            panel.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && panel.classList.contains('active')) {
+                closePanel();
+            }
+        });
+    </script>
+</body>
+
+</html>

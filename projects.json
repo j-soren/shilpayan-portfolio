@@ -1,0 +1,187 @@
+[
+  {
+    "id": "project-01",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Bhagalpur",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "01-a.jpeg", "caption": "Front Elevation" },
+      { "src": "01-b.jpeg", "caption": "Angled Perspective" }
+    ]
+  },
+  {
+    "id": "project-02",
+    "title": "Modern Residence ",
+    "category": ["Commercial", "Residential"],
+    "year": "2026",
+    "client": "Private Client, Gaighat Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "02-a.jpeg", "caption": "Angled Perspective" },
+      { "src": "02-b.jpeg", "caption": "Street View" },
+      { "src": "02-c.jpeg", "caption": "Night View" }
+    ]
+  },
+  {
+    "id": "project-03",
+    "title": "Cosmetic Shop Facade",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Munger",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "03-a.jpeg", "caption": "Daytime View" },
+      { "src": "03-b.jpeg", "caption": "Evening View" }
+    ]
+  },
+  {
+    "id": "project-04",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Munger",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "04-a.jpeg", "caption": "Lobby View" },
+      { "src": "04-b.jpeg", "caption": "Conference Room" }
+    ]
+  },
+  {
+    "id": "project-05",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Patel Nagar, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+
+    "images": [
+      { "src": "05-a.jpeg", "caption": "Aerial View" },
+      { "src": "05-b.jpeg", "caption": "Pathway Perspective" },
+      { "src": "05-c.jpeg", "caption": "Evening Ambience" }
+    ]
+  },
+  {
+    "id": "project-06",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Jagdeo Path , Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "06-a.jpeg", "caption": "Exterior View" },
+      { "src": "06-b.jpeg", "caption": "Interior Atrium" }
+    ]
+  },
+  {
+    "id": "project-07",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Lucknow",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "07-a.jpeg", "caption": "Facade View" },
+      { "src": "07-b.jpeg", "caption": "Green Roof Perspective" }
+    ]
+  },
+  {
+    "id": "project-08",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Parsa, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "08-a.jpeg", "caption": "Street View" },
+      { "src": "08-b.jpeg", "caption": "Public Plaza Perspective" }
+    ]
+  },
+  {
+    "id": "project-09",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Gola Road, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "09-a.jpeg", "caption": "Before Renovation" },
+      { "src": "09-b.jpeg", "caption": "After Renovation" }
+    ]
+  },
+  {
+    "id": "project-10",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, AG Colony, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "10-a.jpeg", "caption": "Exterior View" },
+      { "src": "10-b.jpeg", "caption": "Interior Concourse" }
+    ]
+  },
+  {
+    "id": "project-11",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, 70 ft, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+
+    "images": [
+      { "src": "11-a.jpeg", "caption": "Site Plan" },
+      { "src": "11-b.jpeg", "caption": "Building Perspective" }
+    ]
+  },
+  {
+    "id": "project-12",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Sagar, MP",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+
+    "images": [
+      { "src": "12-a.jpeg", "caption": "Exterior View" },
+      { "src": "12-b.jpeg", "caption": "Patient Room Perspective" }
+    ]
+  },
+  {
+    "id": "project-13",
+    "title": "Modern Residence ",
+    "category": "Residential",
+    "year": "2026",
+    "client": "Private Client, Gola Road, Patna",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "13-a.jpeg", "caption": "Storefront View" },
+      { "src": "13-b.jpeg", "caption": "Interior Display" }
+    ]
+  },
+  {
+    "id": "project-14",
+    "title": "Residential Tower Proposal",
+    "category": "High-Rise Design",
+    "year": "2026",
+    "client": "Private Client",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "14-a.jpeg", "caption": "Tower Perspective" },
+      { "src": "14-b.jpeg", "caption": "Night View" }
+    ]
+  },
+  {
+    "id": "project-15",
+    "title": "Civic Plaza Design",
+    "category": "Public Space",
+    "year": "2026",
+    "client": "Private Client",
+    "description": "A complete architectural visualization for a modern residential project. The focus was on clean geometric lines, maximizing natural light, and creating a seamless flow between the interior and exterior spaces.",
+    "images": [
+      { "src": "15-a.jpeg", "caption": "Daytime View" },
+      { "src": "15-b.jpeg", "caption": "Evening View" }
+    ]
+  }
+]

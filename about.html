@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shilpayan | About</title>
+    <style>
+        /* Page-specific layout for About */
+        main {
+            max-width: 800px;
+            margin: 6rem auto;
+            padding: 0 4vw;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 2rem;
+            color: var(--text-main);
+        }
+
+        .bio {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+        }
+
+        .bio p {
+            margin-bottom: 1.5rem;
+        }
+
+        .bio strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .service-block h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .service-block p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="/shilpayan-portfolio/assets/style-CAhS2Zyp.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logo" style="text-transform: uppercase;">Shilpayan.</div>
+        <div class="nav-center">
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+            <a href="about.html" class="active">About</a>
+        </div>
+        <div class="theme-controls">
+            <button class="theme-btn" onclick="setTheme('light', this)">Light</button>
+            <button class="theme-btn" onclick="setTheme('dark', this)">Dark</button>
+            <button class="theme-btn" onclick="setTheme('opal', this)">Opal</button>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Building with vision.</h1>
+        <div class="bio">
+            <p><strong>Shilpayan</strong> is a premier construction and EPC (Engineering, Procurement, and Construction)
+                consulting firm dedicated to transforming ambitious blueprints into high-performance physical
+                structures.</p>
+            <p>We bridge the critical gap between architectural design and on-the-ground execution. Our approach relies
+                on rigorous project management, deep technical expertise, and a comprehensive understanding of complex
+                building landscapes. From initial structural planning and site consulting to the final stages of
+                execution, we ensure every detail aligns with the highest standards of quality.</p>
+            <p>Because the spaces of tomorrow demand more than just concrete and steel, we also specialize in
+                integrating modern infrastructure—planning for advanced <strong>smart-home ecosystems</strong> and
+                interactive technologies right from the foundational level. At Shilpayan, we engineer environments.</p>
+        </div>
+
+        <div class="services">
+            <div class="service-block">
+                <h3>EPC Consulting</h3>
+                <p>End-to-end engineering, procurement, and construction management to ensure seamless project delivery.
+                </p>
+            </div>
+            <div class="service-block">
+                <h3>Execution & Build</h3>
+                <p>Transforming architectural renders and spatial plans into tangible, structurally sound realities.</p>
+            </div>
+            <div class="service-block">
+                <h3>Smart Infrastructure</h3>
+                <p>Integrating next-generation technology and hardware ecosystems directly into modern builds.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global Theme Logic
+        const savedTheme = localStorage.getItem('studio-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === savedTheme) btn.classList.add('active');
+            });
+        });
+
+        function setTheme(themeName, btnElement) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('studio-theme', themeName);
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
